@@ -1,15 +1,2 @@
-[package]
-name = "vaccel"
-version = "0.1.0"
-authors = ["Babis Chalios <bchalios@nubificus.co.uk>"]
-edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-tarpc = { version = "0.26.2", features = [ "tokio1", "serde1", "tcp" ] }
-futures = "0.3"
-tokio = { version = "1", features = [ "full" ] }
-serde = "1"
-dashmap = "4"
-mktemp = "0.4"
+[workspace]
+members = ["vaccel", "vaccel-agent"]

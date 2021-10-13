@@ -1,0 +1,25 @@
+[package]
+name = "vaccel"
+version = "0.1.0"
+authors = ["Babis Chalios <bchalios@nubificus.co.uk>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tarpc = { version = "0.26.2", features = [ "tokio1", "serde1", "tcp", "serde-transport" ] }
+futures = "0.3.17"
+tokio = { version = "1", features = [ "full" ] }
+serde = "1"
+dashmap = "4"
+mktemp = "0.4"
+users = "0.11.0"
+tokio-vsock = "0.3.1"
+tokio-util = { version = "0.6.8", features = ["codec"] }
+tokio-serde = { version = "0.8", features = ["json"] }
+thiserror = "1.0"
+
+[dev-dependencies]
+env_logger = "0.8.3"
+log = "0.4.0"
+tokio = { version = "1", features = [ "full" ] }

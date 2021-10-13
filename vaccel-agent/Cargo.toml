@@ -1,0 +1,20 @@
+[package]
+name = "vaccel-agent"
+version = "0.1.0"
+authors = ["Babis Chalios <mail@bchalios.io>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+structopt = { version = "0.3", default-features = false }
+vaccel = { path = "../vaccel" }
+tokio-util = { version = "0.6.8", features = ["codec"] }
+tokio-serde = { version = "0.8", features = ["json"] }
+tokio-stream = { version = "0.1.7", features = ["net"] }
+tokio = { version = "1", features = [ "full" ] }
+tarpc = { version = "0.26.2", features = [ "tokio1", "serde1", "tcp", "serde-transport" ] }
+log = "0.4.14"
+env_logger = "0.9"
+signal-hook = "0.1.9"
+ctrlc = { version = "3.0", features = ["termination"] }
