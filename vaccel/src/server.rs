@@ -1,4 +1,5 @@
-use std::path::{Path, PathBuf};
+use std::fs;
+use std::path::Path;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
@@ -13,9 +14,9 @@ use crate::session::Session;
 use crate::{Error, Result};
 
 #[tarpc::service]
-pub trait Vaccel {
+pub trait VaccelAPI {
     /// Create a new vAccel session
-    async fn new_session() -> u64;
+    async fn new_session() -> Result<u64>;
 
     /// Destroy a vAccel session
     async fn destroy_session(session: u64) -> Result<()>;
@@ -34,13 +35,21 @@ pub struct ServerState {
 }
 
 impl Server {
-    fn new() -> Result<Self> {
-        let rundir = Temp::new_dir_in(&Path::new("/run/user")).map_err(|_| Error::IOError)?;
+    pub fn new() -> Result<Self> {
+        let vaccel_path =
+            Path::new(&format!("/run/user/{}/vaccel", users::get_current_uid())).to_path_buf();
+
+        // If vAccel rundir path does not exist, create it
+        if !vaccel_path.is_dir() {
+            fs::create_dir(&vaccel_path)?;
+        }
+
+        let rundir = Temp::new_dir_in(&Path::new(&vaccel_path)).map_err(|_| Error::IOError)?;
 
         Ok(Server {
             0: Arc::new(ServerState {
                 rundir,
-                session_id: AtomicU64::new(0),
+                session_id: AtomicU64::new(1),
                 sessions: DashMap::new(),
             }),
         })
@@ -66,18 +75,20 @@ impl Server {
 }
 
 #[tarpc::server]
-impl Vaccel for Server {
-    async fn new_session(self, _: Context) -> u64 {
+impl VaccelAPI for Server {
+    async fn new_session(self, _: Context) -> Result<u64> {
         let id = self.next_id();
-        let mut rundir = self.0.rundir.clone();
-        rundir.push(format!("session.{}", id));
+        let mut rundir = self.0.rundir.as_path().to_path_buf();
 
-        let session = Session::default()
+        rundir.push(format!("session.{}", id));
+        fs::create_dir(&rundir)?;
+
+        let session = Session::new()
             .with_id(id)
             .with_rundir(rundir.as_path().to_path_buf());
         self.0.sessions.insert(id, Arc::new(session));
 
-        id
+        Ok(id)
     }
 
     async fn destroy_session(self, _: Context, session_id: u64) -> Result<()> {

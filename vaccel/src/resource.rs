@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::path::{Path, PathBuf};
 
 use crate::tensorflow::models::{TensorflowModel, TensorflowSavedModel};
 
