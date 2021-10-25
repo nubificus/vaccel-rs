@@ -77,7 +77,7 @@ impl TensorflowSavedModelBuilder {
     }
 }
 
-impl ResourceType<'_> for TensorflowSavedModel {
+impl ResourceType for TensorflowSavedModel {
     fn id(&self) -> u64 {
         self.id
     }
@@ -95,7 +95,7 @@ pub struct TensorflowModel {
     model: ProtobufModel,
 }
 
-impl ResourceType<'_> for TensorflowModel {
+impl ResourceType for TensorflowModel {
     fn id(&self) -> u64 {
         self.id
     }

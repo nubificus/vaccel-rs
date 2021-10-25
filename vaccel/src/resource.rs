@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::tensorflow::models::{TensorflowModel, TensorflowSavedModel};
 
-pub trait ResourceType<'a>: Serialize + Deserialize<'a> {
+pub trait ResourceType: Serialize + for<'a> Deserialize<'a> {
     /// Get id of the resource
     fn id(&self) -> u64;
 }
