@@ -51,9 +51,7 @@ impl Server {
             Path::new(&format!("/run/user/{}/vaccel", users::get_current_uid())).to_path_buf();
 
         // If vAccel rundir path does not exist, create it
-        if !vaccel_path.is_dir() {
-            fs::create_dir(&vaccel_path)?;
-        }
+        fs::create_dir_all(&vaccel_path)?;
 
         let rundir = Temp::new_dir_in(&Path::new(&vaccel_path))?;
 
