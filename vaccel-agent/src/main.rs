@@ -1,7 +1,5 @@
 use std::error::Error;
 use std::path::PathBuf;
-use std::sync::mpsc;
-use std::thread;
 
 use structopt::StructOpt;
 

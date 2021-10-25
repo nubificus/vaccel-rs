@@ -23,7 +23,7 @@ pub enum VaccelConfig {
     Unix(PathBuf),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Vaccel {
     inner: VaccelAPIClient,
 }
@@ -66,9 +66,21 @@ impl Vaccel {
         }
     }
 
-    pub async fn new_session<'a>(&'a self) -> Result<Session<'a>> {
+    pub async fn new_session(&self) -> Result<Session> {
         let id = self.inner.new_session(context::current()).await??;
-        Ok(Session::new().with_client(self).with_id(id))
+        Ok(Session::new().with_id(id))
+    }
+
+    pub async fn destroy_session(&self, session: &Session) -> Result<()> {
+        self.inner
+            .destroy_session(context::current(), session.id())
+            .await?
+    }
+
+    pub async fn tf_session_load(&self, model_id: u64) -> Result<()> {
+        self.inner
+            .tf_session_load(context::current(), model_id)
+            .await?
     }
 }
 

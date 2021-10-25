@@ -9,9 +9,12 @@ use tarpc::context::Context;
 
 use mktemp::Temp;
 
+use crate::plugin::*;
 use crate::resource::Resource;
 use crate::session::Session;
 use crate::{Error, Result};
+
+use vaccel_plugins::VaccelPlugin;
 
 #[tarpc::service]
 pub trait VaccelAPI {
@@ -23,6 +26,13 @@ pub trait VaccelAPI {
 
     /// Register a new vAccel resource
     async fn register_resource(resource: Resource) -> u64;
+
+    // TensorFlow related API
+    /// Load a TensorFlow model in memory creating a session
+    async fn tf_session_load(model_id: u64) -> Result<()>;
+
+    /// Unload TensorFlow session
+    async fn tf_session_unload(model_id: u64) -> Result<()>;
 }
 
 #[derive(Clone)]
@@ -32,6 +42,7 @@ pub struct ServerState {
     rundir: mktemp::Temp,
     session_id: AtomicU64,
     sessions: DashMap<u64, Arc<Session>>,
+    plugins: Arc<Plugins>,
 }
 
 impl Server {
@@ -44,13 +55,20 @@ impl Server {
             fs::create_dir(&vaccel_path)?;
         }
 
-        let rundir = Temp::new_dir_in(&Path::new(&vaccel_path)).map_err(|_| Error::IOError)?;
+        let rundir = Temp::new_dir_in(&Path::new(&vaccel_path))
+            .map_err(|e| Error::IOError(e.to_string()))?;
+
+        let mut plugins = Plugins::new();
+        unsafe {
+            plugins.load("./libvaccel_noop.so")?;
+        }
 
         Ok(Server {
             0: Arc::new(ServerState {
                 rundir,
                 session_id: AtomicU64::new(1),
                 sessions: DashMap::new(),
+                plugins: Arc::new(plugins),
             }),
         })
     }
@@ -66,7 +84,7 @@ impl Server {
         }
     }
 
-    fn get_session(&self, session_id: &u64) -> Option<Arc<Session>> {
+    pub fn get_session(&self, session_id: &u64) -> Option<Arc<Session>> {
         self.0
             .sessions
             .get(session_id)
@@ -99,6 +117,17 @@ impl VaccelAPI for Server {
     }
 
     async fn register_resource(self, _: Context, _resource: Resource) -> u64 {
+        todo!()
+    }
+
+    async fn tf_session_load(self, _: Context, _model_id: u64) -> Result<()> {
+        self.0
+            .plugins
+            .tf_session_load(_model_id)
+            .map_err(|e| Error::Plugin(e.to_string()))
+    }
+
+    async fn tf_session_unload(self, _: Context, _model_id: u64) -> Result<()> {
         todo!()
     }
 }

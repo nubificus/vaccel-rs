@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 pub mod client;
+mod plugin;
 pub mod resource;
 pub mod server;
 pub mod session;
@@ -14,7 +15,10 @@ pub enum Error {
     InvalidArgument,
     /// Error while performing I/O
     #[error("I/O error")]
-    IOError,
+    IOError(String),
+    /// Error while loading a plugin
+    #[error("Plugin loading error")]
+    Plugin(String),
     /// Undefined error
     #[error("BUG: Undefined error")]
     UndefinedError,
@@ -23,7 +27,13 @@ pub enum Error {
 pub type Result<T> = std::result::Result<T, Error>;
 
 impl From<std::io::Error> for Error {
-    fn from(_err: std::io::Error) -> Error {
-        Error::IOError
+    fn from(err: std::io::Error) -> Error {
+        Error::IOError(err.to_string())
+    }
+}
+
+impl From<libloading::Error> for Error {
+    fn from(err: libloading::Error) -> Error {
+        Error::Plugin(err.to_string())
     }
 }

@@ -1,2 +1,7 @@
 [workspace]
-members = ["vaccel", "vaccel-agent"]
+members = [
+	"vaccel",
+	"vaccel-agent",
+	"plugins/core",
+	"plugins/noop"
+]

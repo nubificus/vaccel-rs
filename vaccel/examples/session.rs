@@ -1,5 +1,5 @@
 use env_logger::Env;
-use log::{error, info};
+use log::info;
 
 use vaccel::client::{Vaccel, VaccelConfig};
 

@@ -18,6 +18,9 @@ tokio-vsock = "0.3.1"
 tokio-util = { version = "0.6.8", features = ["codec"] }
 tokio-serde = { version = "0.8", features = ["json"] }
 thiserror = "1.0"
+log = "0.4.0"
+vaccel-plugins = { path = "../plugins/core" }
+libloading = "0.7.1"
 
 [dev-dependencies]
 env_logger = "0.8.3"
