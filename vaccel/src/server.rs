@@ -55,8 +55,7 @@ impl Server {
             fs::create_dir(&vaccel_path)?;
         }
 
-        let rundir = Temp::new_dir_in(&Path::new(&vaccel_path))
-            .map_err(|e| Error::IOError(e.to_string()))?;
+        let rundir = Temp::new_dir_in(&Path::new(&vaccel_path))?;
 
         let mut plugins = Plugins::new();
         unsafe {
@@ -123,8 +122,8 @@ impl VaccelAPI for Server {
     async fn tf_session_load(self, _: Context, _model_id: u64) -> Result<()> {
         self.0
             .plugins
-            .tf_session_load(_model_id)
-            .map_err(|e| Error::Plugin(e.to_string()))
+            .tf_session_load(_model_id)?;
+        Ok(())
     }
 
     async fn tf_session_unload(self, _: Context, _model_id: u64) -> Result<()> {

@@ -37,3 +37,9 @@ impl From<libloading::Error> for Error {
         Error::Plugin(err.to_string())
     }
 }
+
+impl From<vaccel_plugins::InvocationError> for Error {
+    fn from(err: vaccel_plugins::InvocationError) -> Error {
+        Error::Plugin(err.to_string())
+    }
+}
