@@ -60,14 +60,14 @@ impl Server {
             plugins.load("./libvaccel_noop.so")?;
         }
 
-        Ok(Server {
-            0: Arc::new(ServerState {
+        Ok(Server(
+            Arc::new(ServerState {
                 rundir,
                 session_id: AtomicU64::new(1),
                 sessions: DashMap::new(),
                 plugins: Arc::new(plugins),
-            }),
-        })
+            })
+        ))
     }
 
     fn next_id(&self) -> u64 {
